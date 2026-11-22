@@ -12,7 +12,7 @@ venv/
 .ipynb_checkpoints/
 
 # --- Data (never committed) ---
-data/
+/data/
 *.npy
 *.npz
 *.h5
@@ -24,15 +24,15 @@ data/
 *.zip
 
 # --- Training artefacts ---
-mlruns/
-runs/
-checkpoints/
+/mlruns/
+/runs/
+/checkpoints/
 *.pt
 *.pth
 *.ckpt
-outputs/
+/outputs/
 # full ONNX export dir; only the chosen demo models are copied into app/ and web/ (LFS)
-exports/
+/exports/
 
 # --- Demo samples are the exception: small, LFS-tracked ---
 !app/samples/
