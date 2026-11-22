@@ -1,0 +1,22 @@
+# HeiPorSPECTRAL subset (CC BY 4.0, doi:10.1038/s41597-023-02315-8). See docs/DATA.md.
+dataset:
+  name: HeiPorSPECTRAL
+  url: https://e130-hyperspectal-tissue-classification.s3.dkfz.de/data/HeiPorSPECTRAL.zip
+  # Guard against the remote archive changing under us.
+  expected_size: 907375987596
+  archive_prefix: HeiPorSPECTRAL/
+
+paths:
+  raw_dir: data/raw            # zip members are mirrored here, keeping archive paths
+  cache_dir: data/raw/.cache   # central directory + per-image meta.json
+  manifest: configs/subset_heiporspectral.json  # tracked: the exact list of images used
+
+selection:
+  angle: 0          # preferred camera angle
+  repetition: 1     # preferred repetition
+  max_per_pair: 4   # one per situs -> up to 4 images per (pig, organ)
+  annotators: [annotator1, annotator2, annotator3]
+
+download:
+  workers: 4
+  chunk_mb: 8

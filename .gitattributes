@@ -1,0 +1,10 @@
+# Git LFS: small demo models and sample cubes only (data/ and checkpoints are git-ignored).
+*.onnx filter=lfs diff=lfs merge=lfs -text
+web/public/samples/* filter=lfs diff=lfs merge=lfs -text
+app/samples/* filter=lfs diff=lfs merge=lfs -text
+
+# Normalise line endings for text
+* text=auto eol=lf
+*.png binary
+*.gif binary
+*.wasm binary

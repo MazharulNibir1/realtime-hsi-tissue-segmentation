@@ -1,0 +1,55 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# --- Data (never committed) ---
+data/
+*.npy
+*.npz
+*.h5
+*.hdf5
+*.dat
+*.blosc
+*.tar
+*.tar.gz
+*.zip
+
+# --- Training artefacts ---
+mlruns/
+runs/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+outputs/
+# full ONNX export dir; only the chosen demo models are copied into app/ and web/ (LFS)
+exports/
+
+# --- Demo samples are the exception: small, LFS-tracked ---
+!app/samples/
+!app/samples/**
+!web/public/samples/
+!web/public/samples/**
+
+# --- Web ---
+node_modules/
+web/dist/
+.vercel/
+*.tsbuildinfo
+
+# --- Misc ---
+.DS_Store
+.env
+.env.*
+*.log
+.idea/
+.vscode/
