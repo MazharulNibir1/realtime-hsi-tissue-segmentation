@@ -74,3 +74,15 @@ def test_extract_patch_borders():
         p = extract_patch(cube, r, c, 5)
         assert p.shape == (5, 5, 2)
         np.testing.assert_array_equal(p[2, 2], cube[r, c])
+
+
+def test_image_crops_contain_labels(store):
+    from hsi.data.normalize import transform_from_config
+
+    t = transform_from_config({"method": "box", "n_bands": 16}, "l1")
+    ds = ImageDataset(store, store.images(["P1"]), t, augment=True, crop_size=8, crops_per_image=3)
+    assert len(ds) == 6
+    for i in range(len(ds)):
+        x, y = ds[i]
+        assert x.shape == (16, 8, 8) and y.shape == (8, 8)
+        assert (y != 255).any()  # every crop contains a labelled pixel

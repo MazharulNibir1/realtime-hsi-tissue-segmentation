@@ -1,0 +1,19 @@
+# (b) Spatial-spectral patch CNN; receptive field = patch_size (exact, valid convs).
+name: patch_cnn
+model:
+  patch_size: 11
+  spectral_channels: 32
+  width: 64
+  dropout: 0.1
+data:
+  kind: patch
+  patch_size: 11
+  n_per_image: 300
+  resample_each_epoch: true
+train:
+  epochs: 25
+  batch_size: 256
+  lr: 2.0e-3
+  weight_decay: 1.0e-4
+  class_weighting: sqrt_inverse
+  num_workers: 4

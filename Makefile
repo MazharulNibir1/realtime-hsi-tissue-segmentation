@@ -7,7 +7,7 @@ BIN    := $(VENV)/bin
 PY     := $(BIN)/python
 
 .DEFAULT_GOAL := help
-.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess
+.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -49,3 +49,14 @@ data-verify:  ## CRC32-verify every downloaded file
 
 preprocess:  ## Bin + label the downloaded subset into data/processed (~10 GB)
 	$(PY) scripts/preprocess_data.py
+
+MODEL ?= unet
+BANDS ?= full
+SEED  ?= 0
+train:  ## Train one model: make train MODEL=unet BANDS=snapshot16 SEED=0
+	$(PY) scripts/train.py --model configs/models/$(MODEL).yaml --bands $(BANDS) --seed $(SEED)
+
+train-smoke:  ## 1-epoch run of each model on a few images (pipeline check, writes runs/smoke)
+	for m in pixel_mlp patch_cnn unet; do \
+	  $(PY) scripts/train.py --model configs/models/$$m.yaml --bands snapshot16 --out runs/smoke --force \
+	    --set train.epochs=1 train.limit_images=12 || exit 1; done

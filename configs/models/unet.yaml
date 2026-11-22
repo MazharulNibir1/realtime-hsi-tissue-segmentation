@@ -1,0 +1,20 @@
+# (c) Small U-Net, bands as channels; loss on annotated pixels only (255 ignored).
+# Trained on 128x128 crops that contain annotated pixels (more classes per batch than full
+# frames, each of which has only one labelled organ); evaluated on full 240x320 frames.
+name: unet
+model:
+  base: 16
+  depth: 3
+  stem_channels: 32
+  dropout: 0.1
+data:
+  kind: image
+  crop_size: 128
+  crops_per_image: 4
+train:
+  epochs: 40
+  batch_size: 16
+  lr: 3.0e-3
+  weight_decay: 1.0e-4
+  class_weighting: sqrt_inverse
+  num_workers: 4

@@ -161,23 +161,52 @@ class PatchDataset(Dataset):
 
 
 class ImageDataset(Dataset):
-    """Full frames for segmentation. Unlabelled pixels carry IGNORE (255)."""
+    """Full frames (or random crops) for segmentation. Unlabelled pixels carry IGNORE (255).
 
-    def __init__(self, store, names, transform: SpectralTransform, augment: bool = False):
+    crop_size: if set, each item is a crop_size x crop_size window that contains a randomly
+    chosen labelled pixel (cropped before the spectral transform, so it is also cheaper).
+    crops_per_image: dataset length multiplier when cropping.
+    """
+
+    def __init__(
+        self, store, names, transform: SpectralTransform, augment: bool = False,
+        crop_size: int | None = None, crops_per_image: int = 1,
+    ):  # fmt: skip
         self.store, self.names, self.transform, self.augment = store, names, transform, augment
+        self.crop_size = crop_size
+        self.k = crops_per_image if crop_size else 1
 
     def __len__(self):
-        return len(self.names)
+        return len(self.names) * self.k
+
+    def _crop_window(self, lab: np.ndarray) -> tuple[slice, slice]:
+        h, w = lab.shape
+        cs = self.crop_size
+        coords = np.argwhere(lab != IGNORE)
+        if len(coords):
+            r, c = coords[int(torch.randint(len(coords), (1,)))]
+        else:
+            r, c = int(torch.randint(h, (1,))), int(torch.randint(w, (1,)))
+        r0 = int(np.clip(r - int(torch.randint(cs, (1,))), 0, h - cs))
+        c0 = int(np.clip(c - int(torch.randint(cs, (1,))), 0, w - cs))
+        return slice(r0, r0 + cs), slice(c0, c0 + cs)
 
     def __getitem__(self, i):
-        n = self.names[i]
-        x = self.transform(np.asarray(self.store.cube(n)))
-        y = self.store.labels(n).astype(np.int64)
+        n = self.names[i // self.k]
+        y = self.store.labels(n)
+        cube = self.store.cube(n)
+        if self.crop_size:
+            rs, cs = self._crop_window(y)
+            cube, y = cube[rs, cs], y[rs, cs]
+        x = self.transform(np.asarray(cube))
+        y = y.astype(np.int64)
         if self.augment:
-            flip_h, flip_v, _ = _rand_aug()
+            flip_h, flip_v, k = _rand_aug()
             if flip_h:
                 x, y = x[:, ::-1], y[:, ::-1]
             if flip_v:
                 x, y = x[::-1], y[::-1]
+            if self.crop_size:  # square crops: 90-degree rotations are shape-preserving
+                x, y = np.rot90(x, k), np.rot90(y, k)
         x = torch.from_numpy(np.ascontiguousarray(x.transpose(2, 0, 1)))
         return x, torch.from_numpy(np.ascontiguousarray(y))

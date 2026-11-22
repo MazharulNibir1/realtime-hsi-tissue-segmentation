@@ -1,0 +1,16 @@
+# (a) Per-pixel spectral MLP (1x1 convs). No spatial context.
+name: pixel_mlp
+model:
+  hidden: [128, 128, 64]
+  dropout: 0.1
+data:
+  kind: pixel
+  n_per_image: 2000         # labelled pixels sampled per training image (caps big organs)
+  resample_each_epoch: true
+train:
+  epochs: 30
+  batch_size: 2048
+  lr: 3.0e-3
+  weight_decay: 1.0e-4
+  class_weighting: sqrt_inverse
+  num_workers: 0

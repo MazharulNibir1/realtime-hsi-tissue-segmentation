@@ -47,7 +47,10 @@ class SpectralTransform:
         return self.mode == "l1_standardize" and self.mean is None
 
     def _project_l1(self, x: np.ndarray) -> np.ndarray:
-        y = project_bands(x, self.W)
+        is_identity = self.W.shape[0] == self.W.shape[1] and np.array_equal(
+            self.W, np.eye(self.W.shape[0], dtype=np.float32)
+        )
+        y = np.asarray(x, dtype=np.float32) if is_identity else project_bands(x, self.W)
         return y / np.maximum(np.abs(y).sum(axis=-1, keepdims=True), L1_EPS)
 
     def fit(self, spectra: np.ndarray) -> SpectralTransform:
