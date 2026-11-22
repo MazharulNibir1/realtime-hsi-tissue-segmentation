@@ -7,7 +7,7 @@ BIN    := $(VENV)/bin
 PY     := $(BIN)/python
 
 .DEFAULT_GOAL := help
-.PHONY: help setup lint format test precommit clean data data-dry data-verify
+.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -46,3 +46,6 @@ data:  ## Download the approved HeiPorSPECTRAL subset (~23 GB, resumable)
 
 data-verify:  ## CRC32-verify every downloaded file
 	$(PY) scripts/download_data.py --verify
+
+preprocess:  ## Bin + label the downloaded subset into data/processed (~10 GB)
+	$(PY) scripts/preprocess_data.py

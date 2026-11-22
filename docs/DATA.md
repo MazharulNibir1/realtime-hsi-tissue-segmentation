@@ -51,6 +51,43 @@ kidney_with_Gerotas_fascia 18, bile_fluid 19, unlabeled 255.
 - **Split (by pig):** test = P095, P096; val = P093, P094; train = the other 7 pigs.
   Every organ appears in test and val, and each organ appears in at least 4 training pigs.
 
+## Pipeline (T3)
+
+`make preprocess` (`scripts/preprocess_data.py`, 16 s for 640 images) writes `data/processed/`:
+
+| File | Content |
+|---|---|
+| `cubes/<image>.npy` | float16 (240, 320, 100): 2×2 mean-binned, L1 re-normalised (per-pixel sums 0.9998–1.0002) |
+| `labels/annotator1/<image>.npy` | uint8 (240, 320): class index, 255 = unlabelled. A binned pixel is labelled only if all 4 source pixels have that label |
+| `labels/majority/<image>.npy` | same, label where ≥ 2 of 3 annotators agree (18% more labelled pixels than annotator 1) |
+| `index.json` | per-image metadata, class names, wavelengths |
+
+**Model input transform** (`src/hsi/data/normalize.py`, configured in `configs/data.yaml`):
+
+1. Band projection `y = W x`. Full spectrum: identity (100 bands). `snapshot16`: 16
+   equal-width bins over 500–1000 nm, averaging the channels in each bin (`box`); `gaussian`
+   and `select` are also available.
+2. L1 re-normalisation `y / max(Σ|y|, 1e-8)`.
+3. Mode: `l1` (no further step), `l1_standardize` (per-band z-score with training-set
+   mean/std), or `l1_snv` (per-pixel standard normal variate).
+
+Because W ≥ 0 and L1 only rescales each pixel, steps 1–2 applied to L1 data give exactly the
+same result as applied to raw reflectance (unit-tested). The spatial mosaic pattern of a real
+snapshot sensor is not simulated.
+
+**Split (pig level):**
+
+| Split | Pigs | Images | Labelled px (annotator 1) |
+|---|---|---|---|
+| train | P086–P092 (7) | 364 | 1,121,379 |
+| val | P093, P094 | 148 | 437,312 |
+| test | P095, P096 | 128 | 402,702 |
+
+All 20 organs occur in every split (unit-tested against the manifest).
+
+**Label statistics:** on average 4.0% of each frame is labelled. Median labelled pixels per
+image range from 369 (cartilage) to 8,185 (skin), a ~22× class imbalance in pixel count.
+
 ## Consequences of sparse labels
 
 There is no background class, and only one organ is labelled per frame. All models are trained

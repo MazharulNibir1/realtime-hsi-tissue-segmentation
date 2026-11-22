@@ -20,3 +20,26 @@ selection:
 download:
   workers: 4
   chunk_mb: 8
+
+processing:
+  processed_dir: data/processed
+  bin_factor: 2            # 480x640 -> 240x320
+  label_source: annotator1 # annotator1 | majority (>= 2 of 3 annotators)
+  workers: 6
+
+# Pig-level split. train = every subject not listed. Checked: all 20 organs occur in val and
+# in test, and each organ occurs in >= 4 training pigs.
+split:
+  val: [P093, P094]
+  test: [P095, P096]
+
+# Spectral input settings ("band settings") compared throughout the project.
+bands:
+  full:
+    method: identity       # 100 channels, 500-1000 nm
+  snapshot16:
+    method: box            # box | gaussian | select
+    n_bands: 16
+    fwhm_nm: 20            # used by gaussian only
+
+normalization: l1          # l1 | l1_standardize | l1_snv  (see src/hsi/data/normalize.py)
