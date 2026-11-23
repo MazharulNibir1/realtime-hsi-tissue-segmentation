@@ -42,4 +42,6 @@ bands:
     n_bands: 16
     fwhm_nm: 20            # used by gaussian only
 
-normalization: l1          # l1 | l1_standardize | l1_snv  (see src/hsi/data/normalize.py)
+# l1_standardize: per-band z-score (train stats). Plain l1 leaves inputs at ~0.01 scale, which
+# made eval-mode BatchNorm unstable at high learning rates (val collapse while train loss fell).
+normalization: l1_standardize   # l1 | l1_standardize | l1_snv  (see src/hsi/data/normalize.py)

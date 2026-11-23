@@ -7,7 +7,7 @@ BIN    := $(VENV)/bin
 PY     := $(BIN)/python
 
 .DEFAULT_GOAL := help
-.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke
+.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke train-all
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -60,3 +60,6 @@ train-smoke:  ## 1-epoch run of each model on a few images (pipeline check, writ
 	for m in pixel_mlp patch_cnn unet; do \
 	  $(PY) scripts/train.py --model configs/models/$$m.yaml --bands snapshot16 --out runs/smoke --force \
 	    --set train.epochs=1 train.limit_images=12 || exit 1; done
+
+train-all:  ## T5: all models x {full, snapshot16} x seeds {0,1,2} (resumable, ~3.6 h on M3 Pro)
+	$(PY) scripts/train_all.py
