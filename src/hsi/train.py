@@ -259,7 +259,7 @@ def train(
         "torch": torch.__version__,
         "git_commit": _git_commit(),
     }
-    (run_dir / "summary.json").write_text(json.dumps(summary, indent=1))
+    (run_dir / "summary.json").write_text(json.dumps(summary, indent=1) + "\n")
     return summary
 
 

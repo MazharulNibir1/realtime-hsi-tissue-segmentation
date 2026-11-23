@@ -20,6 +20,7 @@ dependencies = [
     "tqdm>=4.66",
     "onnx>=1.16",
     "onnxruntime>=1.18",
+    "onnxconverter-common>=1.14",
 ]
 
 [project.optional-dependencies]
