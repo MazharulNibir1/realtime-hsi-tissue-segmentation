@@ -7,7 +7,7 @@ BIN    := $(VENV)/bin
 PY     := $(BIN)/python
 
 .DEFAULT_GOAL := help
-.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke train-all evaluate export samples demo-models app
+.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke train-all evaluate export samples demo-models app space
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -79,3 +79,6 @@ demo-models:  ## Copy the chosen ONNX demo models into app/models and web/public
 app:  ## Run the Gradio demo locally (separate venv from app/requirements.txt, as on HF Spaces)
 	test -x .venv-app/bin/python || ($(PYTHON) -m venv .venv-app && .venv-app/bin/pip install -r app/requirements.txt)
 	cd app && ../.venv-app/bin/python app.py
+
+space:  ## Copy app/ into a cloned HF Space: make space SPACE_DIR=~/hf-space (no commit/push)
+	scripts/prepare_space.sh $(SPACE_DIR)
