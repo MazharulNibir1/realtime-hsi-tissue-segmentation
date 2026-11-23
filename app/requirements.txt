@@ -1,0 +1,5 @@
+# Pinned for Hugging Face Spaces (sdk: gradio, sdk_version in README.md must match gradio below).
+gradio==6.32.0
+onnxruntime==1.32.0
+numpy==2.4.6
+matplotlib==3.11.2

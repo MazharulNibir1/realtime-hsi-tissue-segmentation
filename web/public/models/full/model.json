@@ -1,0 +1,17 @@
+{
+ "bands": "full",
+ "label": "Full spectrum (100 bands)",
+ "model": "pixel_mlp",
+ "variant": "fp32",
+ "n_bands": 100,
+ "seed": 2,
+ "params": 39636,
+ "size_bytes": 157739,
+ "test_macro_f1_3seeds": {
+  "mean": 0.7506897825903637,
+  "std": 0.0055114540894800335
+ },
+ "ort_cpu_ms_240x320_m3pro": 12.95,
+ "input": "float32 (1, n_bands, H, W) = transform.json applied to an L1-normalised 100-band cube",
+ "output": "float32 (1, 20, H, W) logits"
+}

@@ -7,7 +7,7 @@ BIN    := $(VENV)/bin
 PY     := $(BIN)/python
 
 .DEFAULT_GOAL := help
-.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke train-all evaluate export samples
+.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke train-all evaluate export samples demo-models app
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -72,3 +72,10 @@ export:  ## T7: ONNX export (fp32/fp16/int8), parity, latency benchmark -> resul
 
 samples:  ## T8: demo samples (test pigs, CC BY 4.0) -> app/samples and web/public/samples
 	$(PY) scripts/make_samples.py
+
+demo-models:  ## Copy the chosen ONNX demo models into app/models and web/public/models
+	$(PY) scripts/prepare_demo_models.py
+
+app:  ## Run the Gradio demo locally (separate venv from app/requirements.txt, as on HF Spaces)
+	test -x .venv-app/bin/python || ($(PYTHON) -m venv .venv-app && .venv-app/bin/pip install -r app/requirements.txt)
+	cd app && ../.venv-app/bin/python app.py

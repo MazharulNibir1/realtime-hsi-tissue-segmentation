@@ -1,0 +1,17 @@
+{
+ "bands": "snapshot16",
+ "label": "Simulated 16-band snapshot sensor",
+ "model": "pixel_mlp",
+ "variant": "fp32",
+ "n_bands": 16,
+ "seed": 1,
+ "params": 28884,
+ "size_bytes": 114741,
+ "test_macro_f1_3seeds": {
+  "mean": 0.7128042037957769,
+  "std": 0.011536094224030437
+ },
+ "ort_cpu_ms_240x320_m3pro": 10.4,
+ "input": "float32 (1, n_bands, H, W) = transform.json applied to an L1-normalised 100-band cube",
+ "output": "float32 (1, 20, H, W) logits"
+}

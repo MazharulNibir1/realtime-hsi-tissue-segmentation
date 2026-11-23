@@ -83,6 +83,7 @@ def main() -> int:
         )
         e = cands[0]
         cube = l1_normalize(bin_spatial(np.asarray(store.cube(e["image_name"]), np.float32), 2))
+        cube = cube.astype(np.float16).astype(np.float32)  # exactly what the demos read
         labels = downsample_labels(store.labels(e["image_name"]), 2, IGNORE)
         acc = {}
         for bands, (sess, tr) in models.items():
