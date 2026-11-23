@@ -9,7 +9,7 @@ Latency: batch 1, full frame (C x 240 x 320; also 480 x 640 for fp32), real tran
 preprocessing (band projection + L1 + standardise, NumPy) is timed separately.
 
 Demo model choice (one per band setting): speed first, because both demos run on CPU-class
-backends (Hugging Face "CPU basic" and ONNX Runtime Web WASM):
+backends (the local Gradio app on ONNX Runtime CPU, and ONNX Runtime Web WASM in the browser):
   1. candidates: fp32 models, file < 10 MB
   2. lowest ONNX Runtime CPU latency at 240x320
   3. precision: fp16/int8 replaces fp32 only if it is smaller AND agrees with fp32 on >= 99.5%
@@ -222,8 +222,8 @@ def write_markdown(rep: dict, path: Path) -> None:
                  f"{ms(r['preprocess_numpy_240x320'])} | {ms(r['torch_cpu_240x320'])} | {ms(r['ort_cpu_240x320'])} | "
                  f"{ms(r['ort_cpu_480x640'])} | {ms(r['torch_mps_240x320']) if 'torch_mps_240x320' in r else 'n/a'} | "
                  f"{ms(r['torch_mps_480x640']) if 'torch_mps_480x640' in r else 'n/a'} |")  # fmt: skip
-    L += ["", "## Demo models", "", "Rule: speed first, because both demos run on CPU-class backends (Hugging Face "
-          "CPU basic, ONNX Runtime Web WASM). Among fp32 models with file < 10 MB, the lowest ONNX Runtime CPU latency "
+    L += ["", "## Demo models", "", "Rule: speed first, because both demos run on CPU-class backends (local Gradio app on "
+          "ONNX Runtime CPU, browser demo on ONNX Runtime Web WASM). Among fp32 models with file < 10 MB, the lowest ONNX Runtime CPU latency "
           "at 240 × 320 wins; a fp16/int8 variant replaces fp32 only if it is smaller, agrees with fp32 on ≥ 99.5% "
           "of test pixels and is ≥ 10% faster (beyond timing noise).", ""]  # fmt: skip
     for b, c in rep["demo_choice"].items():

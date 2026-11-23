@@ -1,4 +1,4 @@
-# Pinned for Hugging Face Spaces (sdk: gradio, sdk_version in README.md must match gradio below).
+# Pinned, tested versions for the local Gradio demo (make app).
 gradio==6.32.0
 onnxruntime==1.32.0
 numpy==2.4.6

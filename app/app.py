@@ -262,4 +262,10 @@ with gr.Blocks(title="Hyperspectral tissue classification") as demo:
     demo.load(run, inputs, outputs)
 
 if __name__ == "__main__":
-    demo.launch()
+    import argparse
+
+    ap = argparse.ArgumentParser(description="Hyperspectral tissue classification demo")
+    ap.add_argument("--port", type=int, default=None, help="local port (default: Gradio's 7860)")
+    args = ap.parse_args()
+    # Local only: listen on localhost, never create a public share link.
+    demo.launch(server_name="127.0.0.1", server_port=args.port, share=False)

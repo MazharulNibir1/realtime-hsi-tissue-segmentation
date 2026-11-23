@@ -1,49 +1,44 @@
----
-title: Hyperspectral Tissue Classification
-emoji: 🩺
-colorFrom: blue
-colorTo: indigo
-sdk: gradio
-sdk_version: 6.32.0
-python_version: "3.11"
-app_file: app.py
-pinned: false
-license: mit
-short_description: Surgical HSI organ classification, 100 vs 16 bands (ONNX)
----
+# Gradio demo (local)
 
-# Hyperspectral tissue classification: full spectrum vs simulated 16-band sensor
+Server-side version of the demo: Gradio UI + ONNX Runtime on CPU. It runs on your own machine only
+(`127.0.0.1`, no public link). The **public demo** is the browser version in [`../web`](../web), which
+runs the same models in the visitor's browser.
 
-Interactive demo for per-pixel organ classification on porcine surgical hyperspectral images
-(HeiPorSPECTRAL: 20 organs, 500–1000 nm). It compares the full 100-band spectrum with a simulated
-16-band snapshot mosaic sensor.
+```bash
+make app                  # from the repo root; creates .venv-app from app/requirements.txt
+# open http://127.0.0.1:7860
+```
 
-- **Model:** 29k–40k-parameter per-pixel network (1×1 convolutions), ONNX Runtime on CPU. It is the
-  fastest of the three architectures trained; test macro F1 is 0.751 (100 bands) and 0.713 (16 bands).
-  A spatial patch CNN was more accurate (0.802 / 0.786) but 4–5× slower on CPU (59 ms vs 13 ms per 240×320 frame).
-- **Samples:** 5 frames from pigs that were never used for training. Kidney is included as the
-  model's known failure case (mostly confused with liver).
-- **Interaction:** click any pixel to compare its spectrum with the training-set class means. The
-  run-benchmark button measures latency on this server.
+or, inside `app/` with any Python 3.10–3.12 environment:
 
-Training code, evaluation, and the in-browser (ONNX Runtime Web) version:
-https://github.com/MazharulNibir1/realtime-hsi-tissue-segmentation
+```bash
+pip install -r requirements.txt
+python app.py             # --port 7861 for another port
+```
+
+## What it shows
+
+- 5 sample frames from pigs **never used in training** (kidney included as the model's known failure
+  case), or your own `.npy` cube (H×W×100, 500–1000 nm, max 512 px per side).
+- Toggle: full 100-band spectrum vs simulated 16-band snapshot sensor.
+- Pseudo-RGB, predicted-tissue overlay with legend (annotated region outlined in white), mean class
+  confidence, overlay opacity and confidence threshold.
+- Click any pixel: its spectrum vs the training-set class means, and its class probabilities.
+- Measured latency per frame and a 50-frame benchmark.
+
+**Model:** per-pixel network with 29k–40k parameters (1×1 convolutions), the fastest of the three
+architectures trained. Test macro F1 is 0.751 (100 bands) and 0.713 (16 bands); the spatial patch
+CNN was more accurate (0.802 / 0.786) but 4–5× slower on CPU (59 ms vs 13 ms per 240×320 frame).
+See [`../results`](../results).
 
 ## Files
 
 | Path | Content |
 |---|---|
 | `app.py` | Gradio UI |
-| `inference.py` | NumPy + ONNX Runtime inference; port of the training-side input transform (parity-tested) |
+| `inference.py` | NumPy + ONNX Runtime inference; port of the training-side input transform (parity-tested in `tests/test_app.py`) |
 | `models/<full\|snapshot16>/` | `model.onnx`, `transform.json` (band matrix, normalisation statistics), `model.json` |
 | `samples/` | 120×160×100 float16 cubes + label maps + metadata (CC BY 4.0, see `samples/LICENSE.md`) |
-
-## Run locally
-
-```bash
-pip install -r requirements.txt
-python app.py
-```
 
 **Research demo only, not for clinical use.** Data: HeiPorSPECTRAL (CC BY 4.0), Studier-Fischer et
 al., Scientific Data 10, 414 (2023), doi:10.1038/s41597-023-02315-8. Code: MIT.

@@ -38,7 +38,7 @@ Machine: Apple M3 Pro, macOS-26.6.2-arm64-arm-64bit; PyTorch 2.15.0, ONNX Runtim
 
 ## Demo models
 
-Rule: speed first, because both demos run on CPU-class backends (Hugging Face CPU basic, ONNX Runtime Web WASM). Among fp32 models with file < 10 MB, the lowest ONNX Runtime CPU latency at 240 × 320 wins; a fp16/int8 variant replaces fp32 only if it is smaller, agrees with fp32 on ≥ 99.5% of test pixels and is ≥ 10% faster (beyond timing noise).
+Rule: speed first, because both demos run on CPU-class backends (local Gradio app on ONNX Runtime CPU, browser demo on ONNX Runtime Web WASM). Among fp32 models with file < 10 MB, the lowest ONNX Runtime CPU latency at 240 × 320 wins; a fp16/int8 variant replaces fp32 only if it is smaller, agrees with fp32 on ≥ 99.5% of test pixels and is ≥ 10% faster (beyond timing noise).
 
 - **full:** Pixel MLP (fp32) → `exports/pixel_mlp_full/model_fp32.onnx`
 - **snapshot16:** Pixel MLP (fp32) → `exports/pixel_mlp_snapshot16/model_fp32.onnx`
