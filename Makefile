@@ -7,7 +7,7 @@ BIN    := $(VENV)/bin
 PY     := $(BIN)/python
 
 .DEFAULT_GOAL := help
-.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke train-all
+.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke train-all evaluate export
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -63,3 +63,9 @@ train-smoke:  ## 1-epoch run of each model on a few images (pipeline check, writ
 
 train-all:  ## T5: all models x {full, snapshot16} x seeds {0,1,2} (resumable, ~3.6 h on M3 Pro)
 	$(PY) scripts/train_all.py
+
+evaluate:  ## T6: test-set metrics, figures and results/results.md for all finished runs
+	$(PY) scripts/evaluate.py
+
+export:  ## T7: ONNX export (fp32/fp16/int8), parity, latency benchmark -> results/benchmark.md
+	$(PY) scripts/export_benchmark.py
