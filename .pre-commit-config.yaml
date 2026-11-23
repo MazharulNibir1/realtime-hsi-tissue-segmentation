@@ -1,3 +1,7 @@
+# Binary artefacts are never touched by text hooks. (pre-commit guesses file type from content;
+# sample label maps are mostly 0xFF bytes and were misdetected as text and given a trailing newline.)
+exclude: '\.(bin|onnx|npy|wasm)$'
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0

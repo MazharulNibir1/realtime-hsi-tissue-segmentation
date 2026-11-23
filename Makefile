@@ -7,7 +7,7 @@ BIN    := $(VENV)/bin
 PY     := $(BIN)/python
 
 .DEFAULT_GOAL := help
-.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke train-all evaluate export
+.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke train-all evaluate export samples
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -69,3 +69,6 @@ evaluate:  ## T6: test-set metrics, figures and results/results.md for all finis
 
 export:  ## T7: ONNX export (fp32/fp16/int8), parity, latency benchmark -> results/benchmark.md
 	$(PY) scripts/export_benchmark.py
+
+samples:  ## T8: demo samples (test pigs, CC BY 4.0) -> app/samples and web/public/samples
+	$(PY) scripts/make_samples.py
