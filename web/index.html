@@ -93,22 +93,62 @@
         </section>
         <section id="results" class="results-card" aria-labelledby="res-h">
           <div class="results-head">
-            <h2 id="res-h" class="section-title">Results on unseen pigs</h2>
+            <h2 id="res-h" class="section-title">Results on pigs the models never saw</h2>
             <a href="https://github.com/MazharulNibir1/realtime-hsi-tissue-segmentation/blob/main/results/results.md" target="_blank" rel="noopener">Full results</a>
           </div>
+
+          <div class="answer">
+            <p class="answer-big">A 16-band camera is almost as good as the full spectrum.</p>
+            <p class="answer-sub">
+              The best model scores 0.802 with all 100 bands and 0.786 with only 16, a drop of just 0.016.
+              The U-Net does not drop at all.
+            </p>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat"><span class="stat-big">0.802</span><span class="stat-label">best score<br />Patch CNN, 100 bands</span></div>
+            <div class="stat"><span class="stat-big">−0.016</span><span class="stat-label">cost of using 16 bands<br />best model</span></div>
+            <div class="stat"><span class="stat-big">10–13 ms</span><span class="stat-label">per frame on a laptop CPU<br />this demo's model</span></div>
+          </div>
+
           <table class="results">
+            <caption class="sr-only">Test macro F1 by model and number of bands, change with 16 bands, CPU time per frame</caption>
             <thead>
-              <tr><th scope="col">Model</th><th scope="col" class="num">Full spectrum</th><th scope="col" class="num">16 bands</th><th scope="col" class="num">CPU time per frame</th></tr>
+              <tr>
+                <th scope="col">Model</th>
+                <th scope="col" class="num">100 bands</th>
+                <th scope="col" class="num">16 bands</th>
+                <th scope="col" class="num">Change with 16 bands</th>
+                <th scope="col" class="num col-time">CPU time per frame</th>
+              </tr>
             </thead>
             <tbody>
-              <tr><td>Patch CNN (11×11 context)</td><td class="num">0.802</td><td class="num">0.786</td><td class="num">58–59 ms</td></tr>
-              <tr><td>U-Net</td><td class="num">0.761</td><td class="num">0.762</td><td class="num">17–18 ms</td></tr>
-              <tr class="this-demo"><td>Pixel MLP <span class="tag">this demo</span></td><td class="num">0.751</td><td class="num">0.713</td><td class="num">10–13 ms</td></tr>
+              <tr>
+                <th scope="row">Patch CNN <span class="sub">looks at 11×11 pixels</span></th>
+                <td class="num best">0.802</td><td class="num best">0.786</td>
+                <td class="num"><span class="delta small">−0.016</span></td>
+                <td class="num col-time">58–59 ms</td>
+              </tr>
+              <tr>
+                <th scope="row">U-Net <span class="sub">looks at the whole frame</span></th>
+                <td class="num">0.761</td><td class="num">0.762</td>
+                <td class="num"><span class="delta none">+0.001</span></td>
+                <td class="num col-time">17–18 ms</td>
+              </tr>
+              <tr class="this-demo">
+                <th scope="row">Pixel MLP <span class="tag">on this page</span> <span class="sub">one pixel at a time</span></th>
+                <td class="num">0.751</td><td class="num">0.713</td>
+                <td class="num"><span class="delta larger">−0.038</span></td>
+                <td class="num col-time best">10–13 ms</td>
+              </tr>
             </tbody>
           </table>
-          <p class="meta">
-            Macro F1 over 20 organs on 2 test pigs never used in training, mean of 3 seeds. CPU time: ONNX
-            Runtime, one 240×320 frame, Apple M3 Pro. With spatial context, 16 bands cost 0.016 F1 or less.
+
+          <p class="how-to-read">
+            <strong>How to read this.</strong> Score = macro F1 from 0 to 1 (1 means every labelled pixel of every
+            organ is right), averaged over 20 organs and 3 training runs, measured on 2 test pigs. Read across a
+            row: a small change means the cheaper 16-band camera is nearly as accurate. Models that look at
+            neighbouring pixels lose the least. This page runs the fastest model, not the most accurate one.
           </p>
         </section>
         </div>

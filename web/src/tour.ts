@@ -56,6 +56,13 @@ export const STEPS: TourStep[] = [
       "WebAssembly), the time per frame and the frames per second.",
     target: "#bench",
   },
+  {
+    title: "7. See the overall results",
+    body:
+      "This card answers the main question: does a cheaper 16-band camera lose accuracy? Read the blue answer first, " +
+      "then each row from left to right. A small change means 16 bands are almost as good.",
+    target: "#results",
+  },
 ];
 
 const SEEN_KEY = "hsi-tour-seen-v1";

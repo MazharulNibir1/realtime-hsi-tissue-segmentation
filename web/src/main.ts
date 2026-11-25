@@ -385,6 +385,25 @@ function buildControls() {
   ui.live.addEventListener("click", toggleLive);
   window.addEventListener("resize", () => updatePixel());
   document.getElementById("guide")?.addEventListener("click", () => startTour());
+  // "Results" link: scroll to the card and flash its outline so the eye lands on it
+  const flashResults = () => {
+    const card = document.getElementById("results");
+    if (!card) return;
+    card.classList.remove("flash");
+    void card.offsetWidth; // restart the animation
+    card.classList.add("flash");
+    setTimeout(() => card.classList.remove("flash"), 2200);
+  };
+  document.querySelectorAll<HTMLAnchorElement>('a[href="#results"]').forEach((a) =>
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.getElementById("results")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+      history.replaceState(null, "", "#results");
+      setTimeout(flashResults, reduced ? 0 : 450);
+    }),
+  );
+  if (location.hash === "#results") setTimeout(flashResults, 600);
 }
 
 async function onUpload() {
