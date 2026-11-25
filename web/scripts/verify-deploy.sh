@@ -14,7 +14,16 @@ hdr() { curl -sI -H 'Accept-Encoding: br, gzip' "$1" | tr -d '\r' | awk -v k="$(
 
 echo "Page: $URL/"
 code=$(curl -s -o /dev/null -w '%{http_code}' "$URL/")
-[[ "$code" == 200 ]] && ok "HTTP 200" || bad "HTTP $code"
+if [[ "$code" == 200 ]]; then ok "HTTP 200"
+else
+  bad "HTTP $code"
+  loc=$(curl -sI "$URL/" | tr -d '\r' | awk 'tolower($1)=="location:"{print $2}')
+  if [[ "$loc" == *vercel.com/sso* || "$loc" == *vercel.com/login* ]]; then
+    echo "  This URL is behind Vercel Deployment Protection (login). Use the public production domain"
+    echo "  (Project -> Settings -> Domains) or relax protection (Settings -> Deployment Protection)."
+    exit 1
+  fi
+fi
 [[ "$(hdr "$URL/" Cross-Origin-Opener-Policy)" == same-origin ]] && ok "COOP same-origin" || bad "COOP missing (multithreaded WASM disabled)"
 [[ "$(hdr "$URL/" Cross-Origin-Embedder-Policy)" == require-corp ]] && ok "COEP require-corp" || bad "COEP missing (multithreaded WASM disabled)"
 
@@ -32,9 +41,11 @@ done
 
 echo "Models and samples are real data (not Git LFS pointers):"
 for p in models/full/model.onnx models/snapshot16/model.onnx samples/liver_P095.cube.bin; do
+  pcode=$(curl -s -o /dev/null -w '%{http_code}' "$URL/$p")
   head=$(curl -s -r 0-40 "$URL/$p" | head -c 40)
   size=$(curl -sI "$URL/$p" | tr -d '\r' | awk 'tolower($1)=="content-length:"{print $2}')
-  if [[ "$head" == version\ https://git-lfs* ]]; then bad "$p is an LFS pointer (enable Git LFS in Vercel, redeploy)"
+  if [[ "$pcode" != 200 && "$pcode" != 206 ]]; then bad "$p: HTTP $pcode"
+  elif [[ "$head" == version\ https://git-lfs* ]]; then bad "$p is an LFS pointer (enable Git LFS in Vercel, redeploy)"
   else ok "$p (${size:-?} bytes)"; fi
 done
 

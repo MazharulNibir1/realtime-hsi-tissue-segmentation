@@ -81,7 +81,14 @@ rarely a problem.
 
 ## 4. Choose the subdomain
 
-- Your site is live at `https://<project-name>.vercel.app`.
+> **Use the production domain, not a deployment URL.** Each deployment also gets its own URL like
+> `https://<project>-<hash>-<team>.vercel.app`. Those are protected by **Vercel Authentication** by
+> default and redirect visitors to a Vercel login (HTTP 302 to `vercel.com/sso-api`). The public link
+> to share is the **production domain** listed under **Settings → Domains**, and it only serves a
+> deployment that is marked **Production** in the Deployments list.
+
+- Your site is live at `https://<project-name>.vercel.app` (check the exact name under
+  **Settings → Domains**; long project names may be shortened).
 - To change it: **Settings → General → Project Name** (the default `.vercel.app` domain follows the
   name), or **Settings → Domains → Add** to add another `something.vercel.app` alias.
 - A custom domain you own (e.g. `demo.yourname.dev`): **Settings → Domains → Add**, then create the
@@ -134,6 +141,8 @@ passed.*
 
 | Symptom | Cause | Fix |
 |---|---|---|
+| Visitors see a Vercel login page; `verify-deploy.sh` reports HTTP 302 | you shared a deployment URL (`<project>-<hash>-<team>.vercel.app`), which Deployment Protection hides | share the domain from **Settings → Domains**; make sure the deployment is marked *Production* (**⋯ → Promote to Production** if it says *Preview*) |
+| Production domain returns 404 | no deployment is promoted to Production, or the domain name differs | **Deployments** → latest *Ready* build → **⋯ → Promote to Production**; check the name under **Settings → Domains** |
 | Build fails: `check-assets: ... Git LFS pointers` | LFS off in Vercel | Step 3 |
 | Build fails: `Cannot find module ...` / `npm ci` error | `web/package-lock.json` missing or out of date | run `npm install` in `web/`, commit `package-lock.json` |
 | Build fails: `tsc` errors | TypeScript error in `web/src` | `make web-build` locally shows the same error |
