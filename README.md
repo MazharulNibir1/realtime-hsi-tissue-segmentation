@@ -1,5 +1,7 @@
 # Real-time-oriented tissue classification on surgical hyperspectral images
 
+[![CI](https://github.com/MazharulNibir1/realtime-hsi-tissue-segmentation/actions/workflows/ci.yml/badge.svg)](https://github.com/MazharulNibir1/realtime-hsi-tissue-segmentation/actions/workflows/ci.yml)
+
 **Live demo (runs in your browser): <https://hyperspectral-imaging-tissue-segmen.vercel.app/>**
 
 Hyperspectral cameras record about 100 wavelengths per pixel, and tissue types differ in how they
@@ -10,10 +12,11 @@ captures?** Three model families were trained with three seeds each and evaluate
 in training**. The models were exported to ONNX, benchmarked on a laptop, and deployed as a website
 where inference runs in the visitor's browser (WebGPU or WebAssembly).
 
-[![Screenshot of the live demo: pseudo-RGB frame, predicted tissue overlay, class table](docs/demo-screenshot.jpg)](https://hyperspectral-imaging-tissue-segmen.vercel.app/)
+[![Demo: switching test frames, toggling the 16-band and full-spectrum models, inspecting pixel spectra and running the 50-frame benchmark](docs/demo.gif)](https://hyperspectral-imaging-tissue-segmen.vercel.app/)
 
-<!-- GIF placeholder: record a short screen capture of the live demo (switch frames, toggle 16-band /
-full, click pixels, press "Live"), save it as docs/demo.gif and replace the screenshot above. -->
+*The demo in action (recorded in Chrome from the production build): frames from pigs never used in training,
+the 16-band vs full-spectrum toggle, pixel spectra against class means, and the in-browser benchmark.
+Kidney is the model's known failure case.*
 
 ## Results
 
@@ -92,12 +95,14 @@ spectral binning only; it does not model the mosaic pattern, demosaicking, cross
 | Patch CNN | 16 | 57.6 ms | 8.0 ms | 31.0 ms |
 
 **Browser** (pixel MLP, 16 bands, 120 × 160 demo frame, including preprocessing and drawing, 50-frame
-median; Chrome on the same laptop, headless):
+median; headless Chrome on the same laptop, using its Apple GPU through Metal, not a software
+fallback):
 
 | Backend | Per frame | Runtime download (compressed) |
 |---|---|---|
 | WebGPU | 9–12 ms (86–108 fps) | 6.2 MB |
 | WebAssembly, 4 threads | 13 ms (78 fps) | 3.5 MB |
+| *Your device* | *open the demo and press **Run 50 frames*** | |
 
 The page measures and shows its own numbers on each visitor's device. Compare the CPU path with
 `?backend=wasm`. The browser preprocessing is a TypeScript port of the Python pipeline, and a test
@@ -150,10 +155,11 @@ tests/        Python tests; web/tests holds the browser parity test
 
 ## Author
 
-**Md. Mazharul Islam Nibir**, MSc Artificial Intelligence student at Queen Mary University of London.
+**[Md. Mazharul Islam Nibir](https://personalportfoliowebsite-iota.vercel.app/)**, MSc Artificial Intelligence student at Queen Mary University of London.
 [GitHub](https://github.com/MazharulNibir1) ·
 [Google Scholar](https://scholar.google.com/citations?user=eqYIQXoAAAAJ&hl=en) ·
-[LinkedIn](https://www.linkedin.com/in/mazharul-islam-nibir-497480211/)
+[LinkedIn](https://www.linkedin.com/in/mazharul-islam-nibir-497480211/) ·
+[Portfolio](https://personalportfoliowebsite-iota.vercel.app/)
 
 ## Licence and data
 

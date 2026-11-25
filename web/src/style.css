@@ -171,6 +171,8 @@ table.legend { width: 100%; border-collapse: collapse; }
 .author-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
 .author p { font-size: 15px; line-height: 1.6; margin: 0 0 12px; max-width: 70ch; }
 .author .author-name { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.author .author-name a { text-decoration: none; }
+.author .author-name a:hover { color: var(--accent); text-decoration: underline; }
 .profile-links { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 4px 0 0; padding: 0; font-size: 15px; }
 .profile-links a { font-weight: 600; }
 .pubs-h { font-weight: 600; }
