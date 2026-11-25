@@ -307,20 +307,33 @@ function updateRuntime() {
   const loaded = models.get(bands)!.loaded!;
   const wasm = transferredBytes(".wasm");
   const onnx = transferredBytes(".onnx");
-  const rows: [string, string, boolean?][] = [
-    [bench ? "Per frame (benchmark median)" : "Last frame", `${fmtMs(last.total)} ms`, true],
+  // headline numbers: the benchmark median when available, otherwise the last frame
+  const live = liveTimes.length > 5 ? median(liveTimes) : null;
+  const ms = bench ? bench.median : live ?? last.total;
+  setText("rt-ms", fmtMs(ms));
+  setText("rt-fps", (1000 / ms).toFixed(0));
+  setText("rt-ms-label", bench ? `ms per frame (median of ${bench.n})` : live ? "ms per frame (live)" : "ms per frame (last frame)");
+  const pill = document.getElementById("rt-backend")!;
+  pill.textContent = loaded.backend === "webgpu" ? "WebGPU" : "WebAssembly";
+  pill.dataset.backend = loaded.backend;
+
+  const rows: [string, string][] = [
     ["Preprocess / model / draw", `${fmtMs(last.pre)} / ${fmtMs(last.infer)} / ${fmtMs(last.post)} ms`],
     ["Frame size", `${frame.w}×${frame.h} px, ${NIN} → ${models.get(bands)!.transform.nBands} bands`],
   ];
-  if (liveTimes.length > 5) rows.push(["Live throughput", `${(1000 / median(liveTimes)).toFixed(0)} fps (median of ${liveTimes.length})`]);
-  if (bench) rows.push([`${bench.n}-frame benchmark`, `median ${fmtMs(bench.median)} ms, p90 ${fmtMs(bench.p90)} ms → ${(1000 / bench.median).toFixed(0)} fps`]);
+  if (bench) rows.push([`${bench.n}-frame benchmark`, `median ${fmtMs(bench.median)} ms, p90 ${fmtMs(bench.p90)} ms`]);
   rows.push(
-    ["Backend", `${loaded.backend === "webgpu" ? "WebGPU" : "WebAssembly (CPU)"}${loaded.fellBack ? ", WebGPU failed for this model" : ""}`],
-    ["CPU threads", `${rt.threads}${rt.isolated ? "" : " (page not cross-origin isolated)"}`],
-    ["Downloaded runtime", wasm.decoded ? `${fmtKb(wasm.decoded)}${wasm.transfer ? `, ${fmtKb(wasm.transfer)} over the network` : ", from cache"}` : "-"],
-    ["Downloaded models", onnx.decoded ? `${fmtKb(onnx.decoded)}${onnx.transfer ? "" : ", from cache"}` : "-"],
+    ["Backend", `${loaded.backend === "webgpu" ? "WebGPU (GPU)" : "WebAssembly (CPU)"}${loaded.fellBack ? ", WebGPU failed" : ""}`],
+    ["CPU threads", `${rt.threads}${rt.isolated ? "" : " (not cross-origin isolated)"}`],
+    ["Runtime download", wasm.decoded ? `${fmtKb(wasm.decoded)}${wasm.transfer ? `, ${fmtKb(wasm.transfer)} transferred` : ", from cache"}` : "-"],
+    ["Model download", onnx.decoded ? `${fmtKb(onnx.decoded)}${onnx.transfer ? "" : ", from cache"}` : "-"],
   );
-  ui.runtime.replaceChildren(...rows.flatMap(([k, v, big]) => [el("dt", {}, k), el("dd", big ? { class: "big" } : {}, v)]));
+  ui.runtime.replaceChildren(...rows.flatMap(([k, v]) => [el("dt", {}, k), el("dd", {}, v)]));
+}
+
+function setText(id: string, text: string) {
+  const e = document.getElementById(id);
+  if (e) e.textContent = text;
 }
 
 // ---------------------------------------------------------------- controls

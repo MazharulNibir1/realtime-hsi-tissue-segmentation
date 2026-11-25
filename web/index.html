@@ -26,7 +26,7 @@
       <nav class="links" aria-label="Project">
         <button id="guide" class="guide-btn" type="button">Guide</button>
         <a href="#how">How it works</a>
-        <a href="https://github.com/MazharulNibir1/realtime-hsi-tissue-segmentation/blob/main/results/results.md">Results</a>
+        <a href="#results">Results</a>
         <a href="https://github.com/MazharulNibir1/realtime-hsi-tissue-segmentation">Code</a>
         <a href="https://personalportfoliowebsite-iota.vercel.app/" target="_blank" rel="author noopener">Creator</a>
       </nav>
@@ -91,14 +91,41 @@
             <ul id="chart-legend" class="chart-legend"></ul>
           </div>
         </section>
-        <section class="runtime-card" aria-labelledby="rt-h">
-          <h2 id="rt-h" class="section-title">Runtime on this device</h2>
-          <dl id="runtime" class="kv"></dl>
-          <p class="meta runtime-note">Times include moving data to and from the GPU. Add <a href="?backend=wasm">?backend=wasm</a> to the address to compare the CPU path.</p>
+        <section id="results" class="results-card" aria-labelledby="res-h">
+          <div class="results-head">
+            <h2 id="res-h" class="section-title">Results on unseen pigs</h2>
+            <a href="https://github.com/MazharulNibir1/realtime-hsi-tissue-segmentation/blob/main/results/results.md" target="_blank" rel="noopener">Full results</a>
+          </div>
+          <table class="results">
+            <thead>
+              <tr><th scope="col">Model</th><th scope="col" class="num">Full spectrum</th><th scope="col" class="num">16 bands</th><th scope="col" class="num">CPU time per frame</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Patch CNN (11×11 context)</td><td class="num">0.802</td><td class="num">0.786</td><td class="num">58–59 ms</td></tr>
+              <tr><td>U-Net</td><td class="num">0.761</td><td class="num">0.762</td><td class="num">17–18 ms</td></tr>
+              <tr class="this-demo"><td>Pixel MLP <span class="tag">this demo</span></td><td class="num">0.751</td><td class="num">0.713</td><td class="num">10–13 ms</td></tr>
+            </tbody>
+          </table>
+          <p class="meta">
+            Macro F1 over 20 organs on 2 test pigs never used in training, mean of 3 seeds. CPU time: ONNX
+            Runtime, one 240×320 frame, Apple M3 Pro. With spatial context, 16 bands cost 0.016 F1 or less.
+          </p>
         </section>
         </div>
 
         <aside class="side">
+          <section class="runtime-card" aria-labelledby="rt-h">
+            <div class="rt-top">
+              <h2 id="rt-h" class="section-title">Runtime on this device</h2>
+              <span id="rt-backend" class="backend-pill">…</span>
+            </div>
+            <div class="rt-hero">
+              <div><span id="rt-ms" class="rt-big">–</span><span id="rt-ms-label" class="rt-unit">ms per frame</span></div>
+              <div><span id="rt-fps" class="rt-big">–</span><span class="rt-unit">frames per second</span></div>
+            </div>
+            <dl id="runtime" class="kv"></dl>
+            <p class="meta runtime-note">Times include moving data to and from the GPU. Add <a href="?backend=wasm">?backend=wasm</a> to the address to compare the CPU path.</p>
+          </section>
           <section aria-labelledby="legend-h">
             <h2 id="legend-h" class="section-title">Predicted classes</h2>
             <table class="legend">
