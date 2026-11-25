@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Spectral tissue: in-browser organ classification</title>
+    <meta
+      name="description"
+      content="Per-pixel organ classification on surgical hyperspectral images, running in your browser with ONNX Runtime Web. Full 100-band spectrum vs a simulated 16-band snapshot sensor."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="bar">
+      <a class="brand" href="./" aria-label="Spectral tissue, home">
+        <svg class="mark" viewBox="0 0 16 16" aria-hidden="true">
+          <rect x="0" y="0" width="7" height="7" fill="#F3C300" /><rect x="9" y="0" width="7" height="7" fill="#A1CAF1" />
+          <rect x="0" y="9" width="7" height="7" fill="#BE0032" /><rect x="9" y="9" width="7" height="7" fill="#8DB600" />
+        </svg>
+        <span>Spectral tissue</span>
+      </a>
+      <nav class="links" aria-label="Project">
+        <a href="#how">How it works</a>
+        <a href="https://github.com/MazharulNibir1/realtime-hsi-tissue-segmentation/blob/main/results/results.md">Results</a>
+        <a href="https://github.com/MazharulNibir1/realtime-hsi-tissue-segmentation">Code</a>
+      </nav>
+    </header>
+
+    <main id="app">
+      <section class="title-row" aria-labelledby="title">
+        <div class="title-text">
+          <h1 id="title">Loading the sample frame…</h1>
+          <p id="finding" class="finding">Per-pixel organ classification, running in this browser.</p>
+        </div>
+        <div class="title-actions">
+          <button id="live" class="btn secondary" type="button" aria-pressed="false" disabled>Live: off</button>
+          <button id="bench" class="btn primary" type="button" disabled>Run 50 frames</button>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="Controls">
+        <div class="control">
+          <span class="label" id="sample-label">Frame (pigs not used in training)</span>
+          <div class="tabs" id="samples" role="radiogroup" aria-labelledby="sample-label"></div>
+        </div>
+        <div class="control">
+          <span class="label" id="model-label">Model input</span>
+          <div class="tabs" id="models" role="radiogroup" aria-labelledby="model-label"></div>
+        </div>
+        <div class="control sliders">
+          <label>Overlay <input id="alpha" type="range" min="0" max="1" step="0.05" value="0.55" /></label>
+          <label>Hide below confidence <output id="conf-out">0.00</output>
+            <input id="minconf" type="range" min="0" max="0.95" step="0.05" value="0" />
+          </label>
+        </div>
+        <div class="control">
+          <label class="file">Your own cube (.npy, H×W×100, 500–1000 nm)
+            <input id="upload" type="file" accept=".npy" />
+          </label>
+        </div>
+      </section>
+
+      <p id="warning" class="warning" role="status" hidden></p>
+
+      <div class="grid">
+        <div class="main-col">
+        <section class="viewer" aria-labelledby="viewer-h">
+          <h2 id="viewer-h" class="section-title">Frame and prediction</h2>
+          <div class="canvases">
+            <figure>
+              <canvas id="rgb" class="frame" aria-label="Pseudo-RGB image of the frame. Click a pixel to inspect its spectrum."></canvas>
+              <figcaption>Pseudo-RGB from 650, 570 and 510 nm. Click a pixel.</figcaption>
+            </figure>
+            <figure>
+              <canvas id="over" class="frame" aria-label="Predicted tissue overlay. Click a pixel to inspect its spectrum."></canvas>
+              <figcaption>Predicted tissue. White outline: the annotated organ.</figcaption>
+            </figure>
+          </div>
+          <div class="spectrum">
+            <div class="spectrum-head">
+              <h2 class="section-title">Spectrum of the selected pixel</h2>
+              <p id="pixel-info" class="meta"></p>
+            </div>
+            <canvas id="chart" class="chart" role="img" aria-label="Spectrum of the selected pixel against class mean spectra"></canvas>
+            <ul id="chart-legend" class="chart-legend"></ul>
+          </div>
+        </section>
+        <section class="runtime-card" aria-labelledby="rt-h">
+          <h2 id="rt-h" class="section-title">Runtime on this device</h2>
+          <dl id="runtime" class="kv"></dl>
+          <p class="meta runtime-note">Times include moving data to and from the GPU. Add <a href="?backend=wasm">?backend=wasm</a> to the address to compare the CPU path.</p>
+        </section>
+        </div>
+
+        <aside class="side">
+          <section aria-labelledby="legend-h">
+            <h2 id="legend-h" class="section-title">Predicted classes</h2>
+            <table class="legend">
+              <thead><tr><th scope="col">Class</th><th scope="col" class="num">Share of frame</th></tr></thead>
+              <tbody id="legend"></tbody>
+            </table>
+          </section>
+          <section aria-labelledby="conf-h">
+            <h2 id="conf-h" class="section-title">Mean confidence, annotated region</h2>
+            <ul id="confidence" class="bars"></ul>
+          </section>
+          <section aria-labelledby="pix-h">
+            <h2 id="pix-h" class="section-title">Selected pixel</h2>
+            <ul id="pixel-probs" class="bars"></ul>
+          </section>
+        </aside>
+      </div>
+
+      <section id="how" class="how" aria-labelledby="how-h">
+        <h2 id="how-h">How it works</h2>
+        <div class="how-cols">
+          <div>
+            <p>
+              The frames come from HeiPorSPECTRAL: porcine organs imaged at 100 wavelengths from 500 to
+              1000 nm. Each pixel's spectrum is normalised, optionally reduced to 16 bands that simulate a
+              snapshot mosaic sensor, and classified into one of 20 organs by a 29k–40k-parameter network
+              exported to ONNX. Everything runs here: the cube, the preprocessing and the model are
+              downloaded once and nothing is sent to a server.
+            </p>
+            <p>
+              The preprocessing is a TypeScript port of the Python pipeline. A test runs both on the same
+              frames and requires the same inputs (max difference about 1e-6) and the same predictions
+              (at least 99.9% of pixels).
+            </p>
+          </div>
+          <div>
+            <p>
+              Results on two test pigs never used for training: macro F1 0.751 with the full spectrum and
+              0.713 with 16 bands for this model. A spatial patch CNN reached 0.802 / 0.786 but is 4–5×
+              slower on a CPU, and this demo is built for speed. Kidney is mostly confused with liver; its
+              frame is included on purpose.
+            </p>
+            <p>
+              Limits: one organ is annotated per frame, so predictions outside the white outline are never
+              scored; the model has no background class; the 16-band sensor is simulated by spectral binning
+              only; the data are porcine and the model is not clinically validated.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p><strong>Research demo only, not for clinical use.</strong></p>
+      <p id="credit">
+        Data: HeiPorSPECTRAL, Studier-Fischer et al., Scientific Data 10, 414 (2023),
+        doi:10.1038/s41597-023-02315-8, licensed CC BY 4.0. Frames binned to 120×160 and re-normalised.
+        Code: MIT.
+      </p>
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

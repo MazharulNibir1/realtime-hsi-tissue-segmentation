@@ -54,3 +54,6 @@ web/dist/
 *.log
 .idea/
 .vscode/
+
+# design tooling output
+/.taste-skill/

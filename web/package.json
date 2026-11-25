@@ -1,0 +1,28 @@
+{
+  "name": "hsi-tissue-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "In-browser hyperspectral tissue classification with ONNX Runtime Web (WebGPU / WASM).",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/public-sans": "5.3.0",
+    "onnxruntime-web": "1.31.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.3",
+    "typescript": "6.0.3",
+    "vite": "8.3.8",
+    "vitest": "5.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

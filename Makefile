@@ -7,7 +7,7 @@ BIN    := $(VENV)/bin
 PY     := $(BIN)/python
 
 .DEFAULT_GOAL := help
-.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke train-all evaluate export samples demo-models app
+.PHONY: help setup lint format test precommit clean data data-dry data-verify preprocess train train-smoke train-all evaluate export samples demo-models app web-install web-dev web-test web-build web-reference
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -79,3 +79,18 @@ demo-models:  ## Copy the chosen ONNX demo models into app/models and web/public
 app:  ## Run the Gradio demo locally on http://127.0.0.1:7860 (separate venv from app/requirements.txt)
 	test -x .venv-app/bin/python || ($(PYTHON) -m venv .venv-app && .venv-app/bin/pip install -r app/requirements.txt)
 	cd app && ../.venv-app/bin/python app.py
+
+web-install:  ## Install the browser demo's npm dependencies (web/)
+	cd web && npm ci
+
+web-dev:  ## Run the browser demo locally on http://localhost:5173
+	cd web && npm run dev
+
+web-test:  ## Parity test: TypeScript preprocessing + onnxruntime-web vs Python reference
+	cd web && npm test
+
+web-build:  ## Typecheck and build the browser demo into web/dist
+	cd web && npm run build
+
+web-reference:  ## Regenerate web/tests/fixtures/reference.json from the Python pipeline
+	$(PY) scripts/make_web_reference.py
