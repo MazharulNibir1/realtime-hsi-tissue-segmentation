@@ -283,8 +283,8 @@ function updatePixel() {
   const series: Series[] = top.map((t, i) => ({
     x: xs, y: scale(spec.mean[t.cls]), sd: scale(spec.std[t.cls]), colour: index.class_colours[t.cls], dashed: i === 1,
   }));
-  series.push({ x: xs, y: scale(pixel), colour: "#ffffff", points: bands !== "full", width: 1.6 });
-  drawChart(ui.chart, series, { grid: "#2e2e31", text: "#8a8c92" });
+  series.push({ x: xs, y: scale(pixel), colour: "#111113", points: bands !== "full", width: 1.6 });
+  drawChart(ui.chart, series, { grid: "#e3e3e6", text: "#5d5f66" });
   ui.chartLegend.replaceChildren(
     ...top.map((t, i) => {
       const li = el("li");
@@ -294,7 +294,7 @@ function updatePixel() {
     }),
     (() => {
       const li = el("li");
-      li.append(el("span", { class: "key", style: "border-color:#ffffff" }), document.createTextNode("This pixel"));
+      li.append(el("span", { class: "key", style: "border-color:#111113" }), document.createTextNode("This pixel"));
       return li;
     })(),
     el("li", { class: "meta" }, "Wavelength in nm; values are % of the pixel's total (L1-normalised)"),

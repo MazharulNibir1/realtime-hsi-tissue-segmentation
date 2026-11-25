@@ -57,3 +57,7 @@ web/dist/
 
 # design tooling output
 /.taste-skill/
+
+# personal documents (never commit)
+Academic_CV_Mazharul.pdf
+/*CV*.pdf

@@ -90,7 +90,13 @@ export function paint(canvas: HTMLCanvasElement, rgba: Uint8ClampedArray, w: num
   img.data.set(rgba);
   ctx.putImageData(img, 0, 0);
   if (mark) {
+    // crosshair: dark halo + white core, visible on light and dark tissue
     const [r, c] = mark;
+    ctx.fillStyle = "rgba(0,0,0,0.75)";
+    ctx.fillRect(c - 5, r - 1, 4, 3);
+    ctx.fillRect(c + 2, r - 1, 4, 3);
+    ctx.fillRect(c - 1, r - 5, 3, 4);
+    ctx.fillRect(c - 1, r + 2, 3, 4);
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(c - 4, r, 3, 1);
     ctx.fillRect(c + 2, r, 3, 1);
