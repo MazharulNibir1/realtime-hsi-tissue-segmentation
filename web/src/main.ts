@@ -14,6 +14,7 @@ import {
   type SampleMeta,
   type TransformSpec,
 } from "./core";
+import { startTour, tourSeen } from "./tour";
 import { createSession, loadRuntime, transferredBytes, type LoadedModel, type Runtime } from "./runtime";
 import { drawChart, hexToRgb, overlay, paint, percentileRecipe, pixelAt, pseudoRgb, type RgbRecipe, type Series } from "./render";
 
@@ -370,6 +371,7 @@ function buildControls() {
   ui.bench.addEventListener("click", runBenchmark);
   ui.live.addEventListener("click", toggleLive);
   window.addEventListener("resize", () => updatePixel());
+  document.getElementById("guide")?.addEventListener("click", () => startTour());
 }
 
 async function onUpload() {
@@ -463,6 +465,7 @@ async function boot() {
     await runOnce();
     ui.bench.disabled = false;
     ui.live.disabled = false;
+    if (!tourSeen() && !new URLSearchParams(location.search).has("notour")) setTimeout(() => startTour(), 400);
     (window as unknown as { __hsi: unknown }).__hsi = { ready: true, backend: rt.backend, threads: rt.threads, last };
   } catch (e) {
     ui.title.textContent = "The demo could not start";
