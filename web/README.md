@@ -11,7 +11,11 @@ npm run build      # typecheck + production build into dist/
 npm run preview    # serve dist/ with the same headers as production
 ```
 
-From the repo root: `make web-install web-test web-build`.
+From the repo root: `make web-install web-test web-build`. Deployment: [`docs/DEPLOY_WEB.md`](../docs/DEPLOY_WEB.md).
+
+`npm run build` first runs `scripts/check-assets.mjs`, which fails if the models or samples are Git LFS
+pointer files (a clone without LFS). After deploying, `scripts/verify-deploy.sh <url>` checks the headers,
+the `.wasm` content type and compression, and that real model and sample files are served.
 
 ## How inference runs
 
